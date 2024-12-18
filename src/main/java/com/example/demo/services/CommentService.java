@@ -7,6 +7,10 @@ import org.apache.tomcat.util.http.parser.Cookie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class CommentService {
 
@@ -16,21 +20,28 @@ public class CommentService {
     @Autowired
     private PostService postService;
 
-    public void addComment(Long postId, Comment comment){
+    public void addComment(Long postId, Comment comment) {
 
-       Post post =  postService.getAPostById(postId);  // fetch the post using the id given to us
-        // add the comment to the post
+        Post post = postService.getAPostById(postId);
+
         comment.setPost(post);
-        //save the comment to the database
+
         commentRepo.save(comment);
 
     }
 
-    public void deleteComment( Long commentId, Long postId){
-        Comment comment =  commentRepo.findByIdAndPostId(commentId, postId);
+    public void deleteComment(Long commentId, Long postId) {
+        Comment comment = commentRepo.findByIdAndPostId(commentId, postId);
         commentRepo.delete(comment);
 
     }
 
 
+    public Comment getComment(Long commentId) {
+        return commentRepo.findById(commentId).orElse(null);
+    }
+
+    public List<Comment> getAllCommentsByPost(Long postId) {
+        return commentRepo.findByPostId(postId);
+    }
 }
